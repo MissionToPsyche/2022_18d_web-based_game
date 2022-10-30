@@ -4,27 +4,26 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    // Variables for player's movement
-    // Default player's speed applied every time player generate any input signal (like keyboard press)
+    // speed applied every time player inputs, but can be changed in Unity
     public float playerSpeedDefault = 3.0f;
-    // The current player's speed
+    // current speed
     private float playerSpeedCurrent = 0.0f;
-    // Slow down over time
+    // slow down for smoother movement
     private float playerDecreaseSpeed = 0.99f;
-    // Direction of the last move that we've made
+    // direction of the last move that we've made
     private Vector3 playerLastDirection = new Vector3();
-    // Use List to have multiple input sources for every direction possible
+    // list is used for W or up arrow, A or left arrow, etc
     public List<KeyCode> buttonUp;
     public List<KeyCode> buttonDown;
     public List<KeyCode> buttonLeft;
     public List<KeyCode> buttonRight;
-
-    Vector3 CheckMove(List<KeyCode> keyCodeList, Vector3 move)
+    
+    //check which button is pressed
+    Vector3 checkMove(List<KeyCode> keyCodeList, Vector3 move)
     {
         foreach (KeyCode element in keyCodeList)
         {
             // Input.GetKey returns true while the user holds down the key
-            // identified by 'element'
             if (Input.GetKey(element))
             {
                 return move;
@@ -34,8 +33,8 @@ public class Movement : MonoBehaviour
         return Vector3.zero;
     }
 
-    // Move the player's starship according to WASD buttons
-    void PlayerMove()
+    // movement code
+    void playerMove()
     {
         Vector3 thisFrameMove = new Vector3();
         thisFrameMove += CheckMove(buttonUp, Vector3.up);
@@ -43,8 +42,9 @@ public class Movement : MonoBehaviour
         thisFrameMove += CheckMove(buttonLeft, Vector3.left);
         thisFrameMove += CheckMove(buttonRight, Vector3.right);
 
-        thisFrameMove.Normalize();
-
+        thisFrameMove.Normalize();  //make vector's magnitude 1
+        
+        //update variables if button is pressed
         if (thisFrameMove.magnitude > 0)
         {
             playerSpeedCurrent = playerSpeedDefault;
@@ -52,10 +52,10 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            playerSpeedCurrent *= playerDecreaseSpeed;
+            playerSpeedCurrent *= playerDecreaseSpeed;  //decrease speed over time once button is unpressed
         }
 
-        this.transform.Translate(playerLastDirection * Time.deltaTime * playerSpeedCurrent, Space.World);
+        this.transform.Translate(playerLastDirection * Time.deltaTime * playerSpeedCurrent, Space.World);   //update position
     }
 
     float Target;
@@ -63,7 +63,8 @@ public class Movement : MonoBehaviour
     {
 
     }
-
+    
+    // Update is called once per frame
     void Update()
     {
         Target += Time.deltaTime / 125;
