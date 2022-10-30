@@ -9,11 +9,11 @@ public class MovementBounds : MonoBehaviour
     private float objectWidth;
     private float objectHeight;
 
-    // Use this for initialization
+    //set bounds of ship so it doesn't move outside of frame
     void Start()
     {
         screenBounds = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, mainCamera.transform.position.z));
-        objectWidth = transform.GetComponent<SpriteRenderer>().bounds.size.x / 4;
+        objectWidth = transform.GetComponent<SpriteRenderer>().bounds.size.x / 4;   //math to ensure right bounds are used
         objectHeight = transform.GetComponent<SpriteRenderer>().bounds.size.y / 4;
     }
 
