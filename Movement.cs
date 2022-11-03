@@ -4,26 +4,26 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    // speed applied every time player inputs, but can be changed in Unity
-    public float playerSpeedDefault = 3.0f;
-    // current speed
+    public float playerSpeedDefault = 7.0f;
     private float playerSpeedCurrent = 0.0f;
-    // slow down for smoother movement
     private float playerDecreaseSpeed = 0.99f;
-    // direction of the last move that we've made
     private Vector3 playerLastDirection = new Vector3();
-    // list is used for W or up arrow, A or left arrow, etc
+
+    // Use List to have multiple input sources for every direction possible
     public List<KeyCode> buttonUp;
     public List<KeyCode> buttonDown;
     public List<KeyCode> buttonLeft;
     public List<KeyCode> buttonRight;
-    
-    //check which button is pressed
-    Vector3 checkMove(List<KeyCode> keyCodeList, Vector3 move)
+
+    // Score 
+    public int score = 0;
+
+    Vector3 CheckMove(List<KeyCode> keyCodeList, Vector3 move)
     {
         foreach (KeyCode element in keyCodeList)
         {
             // Input.GetKey returns true while the user holds down the key
+            // identified by 'element'
             if (Input.GetKey(element))
             {
                 return move;
@@ -33,8 +33,8 @@ public class Movement : MonoBehaviour
         return Vector3.zero;
     }
 
-    // movement code
-    void playerMove()
+    // Move the player's starship according to WASD buttons
+    void PlayerMove()
     {
         Vector3 thisFrameMove = new Vector3();
         thisFrameMove += CheckMove(buttonUp, Vector3.up);
@@ -42,9 +42,8 @@ public class Movement : MonoBehaviour
         thisFrameMove += CheckMove(buttonLeft, Vector3.left);
         thisFrameMove += CheckMove(buttonRight, Vector3.right);
 
-        thisFrameMove.Normalize();  //make vector's magnitude 1
-        
-        //update variables if button is pressed
+        thisFrameMove.Normalize();
+
         if (thisFrameMove.magnitude > 0)
         {
             playerSpeedCurrent = playerSpeedDefault;
@@ -52,10 +51,10 @@ public class Movement : MonoBehaviour
         }
         else
         {
-            playerSpeedCurrent *= playerDecreaseSpeed;  //decrease speed over time once button is unpressed
+            playerSpeedCurrent *= playerDecreaseSpeed;
         }
 
-        this.transform.Translate(playerLastDirection * Time.deltaTime * playerSpeedCurrent, Space.World);   //update position
+        this.transform.Translate(playerLastDirection * Time.deltaTime * playerSpeedCurrent, Space.World);
     }
 
     float Target;
@@ -63,13 +62,21 @@ public class Movement : MonoBehaviour
     {
 
     }
-    
-    // Update is called once per frame
+
     void Update()
     {
         Target += Time.deltaTime / 125;
 
         transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, transform.position.y, Target), 0.05f);
         PlayerMove();
+    }
+
+    void OnTriggerEnter2D(Collider2D obj)
+    {
+        // Main idea: avoid asteroids and if one is hit, pull up information about the asteroid that was hit
+        if (obj.gameObject.CompareTag("Obstacle"))
+        {
+            Destroy(gameObject);
+        }
     }
 }
