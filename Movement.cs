@@ -5,10 +5,10 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     //Movement speeds
-    public float defaultSpeed = 2f;
+    public float defaultSpeed;
     private Animator animation;
     private Rigidbody2D rb;
-    //public Sprite upSprite, downSprite;
+    private Vector2 direction;
 
     void Start()
     {
@@ -18,13 +18,23 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        Vector3 pos = transform.position;
+        //Bounds detection to keep spaceship inside of camera
+        if(transform.position.y >= 4.7f)
+        {
+            transform.position = new Vector3(transform.position.x, 4.7f, 0);
+        }
+        else if(transform.position.y <= -4.7f)
+        {
+            transform.position = new Vector3(transform.position.x, -4.7f, 0);
+        }
 
-        pos.x += defaultSpeed * Time.deltaTime * Input.GetAxis("Horizontal");
-        pos.y += defaultSpeed * Time.deltaTime * Input.GetAxis("Vertical");
+        //Get new direction and speed while spaceship is moving
+        float dirY = Input.GetAxis("Vertical");
+        direction = new Vector2(0, dirY);
 
-        transform.position = pos;
+        rb.velocity = new Vector2(0, direction.y * defaultSpeed);
 
+        //Booleans to determine which animation to show as ship is flying
         if(rb.velocity.y == 0)
         {
             animation.SetBool("flyingUp", false);
@@ -39,15 +49,6 @@ public class Movement : MonoBehaviour
         if(Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
             animation.SetBool("flyingDown",  true);
-        }
-    }
-
-    void OnTriggerEnter2D(Collider2D obj)
-    {
-        // Main idea: avoid asteroids and if one is hit, pull up information about the asteroid that was hit
-        if (obj.gameObject.CompareTag("Obstacle"))
-        {
-            Destroy(gameObject);
         }
     }
 }
