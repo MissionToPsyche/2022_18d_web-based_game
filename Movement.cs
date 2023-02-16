@@ -10,10 +10,16 @@ public class Movement : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 direction;
 
+    private GameObject question;
+    [SerializeField] AudioSource bg;
+    [SerializeField] GameObject questionPanel;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animation = GetComponent<Animator>();
+
+        question = GameObject.FindGameObjectWithTag("Question");
     }
 
     void Update()
@@ -29,6 +35,7 @@ public class Movement : MonoBehaviour
         }
 
         //Get new direction and speed while spaceship is moving
+        //float dirX = Input.GetAxis("Horizontal");
         float dirY = Input.GetAxis("Vertical");
         direction = new Vector2(0, dirY);
 
@@ -49,6 +56,16 @@ public class Movement : MonoBehaviour
         if(Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
             animation.SetBool("flyingDown",  true);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Question")
+        {
+            questionPanel.SetActive(true);
+            Time.timeScale = 0f;
+            bg.Pause();
         }
     }
 }
