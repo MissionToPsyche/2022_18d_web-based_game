@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class QuestionManager : MonoBehaviour
 {
@@ -17,11 +18,15 @@ public class QuestionManager : MonoBehaviour
 
     [SerializeField] private GameObject questionPanel;
     [SerializeField] AudioSource bg;
+    [SerializeField] private GameObject correctFeedback;
+    [SerializeField] private GameObject incorrectFeedback;
+
+    public int successEndgame;
 
     // Start is called before the first frame update
     void Start()
     {
-        if(unansweredQuestions == null || unansweredQuestions.Count == 0)
+        if (unansweredQuestions == null || unansweredQuestions.Count == 0)
         {
             unansweredQuestions = listOfQuestions.ToList<QnA>();
         }
@@ -40,16 +45,22 @@ public class QuestionManager : MonoBehaviour
         unansweredQuestions.RemoveAt(randomQuestion);
     }
 
+    void SetCorrectFalse() { correctFeedback.SetActive(false); }
+    void SetIncorrectFalse() { incorrectFeedback.SetActive(false); }
+
     //if user selects "True"
     public void SelectTrue()
     {
-        if(currentQuestion.isTrue)
+        if (currentQuestion.isTrue)
         {
             score += 1;
             scoreText.text = score.ToString();
             questionPanel.SetActive(false);
             Time.timeScale = 1f;
             bg.Play();
+
+            correctFeedback.SetActive(true);
+            Invoke("SetCorrectFalse", 2.0f);
 
             GetQuestion();
         }
@@ -58,6 +69,9 @@ public class QuestionManager : MonoBehaviour
             questionPanel.SetActive(false);
             Time.timeScale = 1f;
             bg.Play();
+
+            incorrectFeedback.SetActive(true);
+            Invoke("SetIncorrectFalse", 2.0f);
 
             GetQuestion();
         }
@@ -74,6 +88,9 @@ public class QuestionManager : MonoBehaviour
             Time.timeScale = 1f;
             bg.Play();
 
+            correctFeedback.SetActive(true);
+            Invoke("SetCorrectFalse", 2.0f);
+
             GetQuestion();
         }
         else
@@ -82,6 +99,9 @@ public class QuestionManager : MonoBehaviour
             Time.timeScale = 1f;
             bg.Play();
 
+            incorrectFeedback.SetActive(true);
+            Invoke("SetIncorrectFalse", 2.0f);
+
             GetQuestion();
         }
     }
@@ -89,6 +109,9 @@ public class QuestionManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (score == 5)
+        {
+            SceneManager.LoadScene(successEndgame);
+        }
     }
 }
